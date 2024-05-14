@@ -168,8 +168,8 @@ def handle_ai_movement(ball, right_player):
         right_player.x -= AI_VEL
 
 def handle_forehand_collision(ball, player, score, collision_cooldown=3):
-    forehand_zone_start_forehand = player.x
-    forehand_zone_end_forehand = player.x + (player.width // 2)
+    forehand_zone_start = player.x
+    forehand_zone_end = player.x + (player.width // 2)
 
     if time.time() - ball.last_collision_time < collision_cooldown:
         return score
@@ -203,8 +203,8 @@ def handle_forehand_collision(ball, player, score, collision_cooldown=3):
     return score
 
 def handle_backhand_collision(ball, player, score, collision_cooldown = 3):
-    backhand_zone_start_backhand = player.x + (player.width // 2)
-    backhand_zone_end_backhand = player.x + player.width
+    backhand_zone_start = player.x + (player.width // 2)
+    backhand_zone_end = player.x + player.width
 
     if time.time() - ball.last_collision_time < collision_cooldown:
         return score
@@ -287,6 +287,7 @@ def start_vs_player_game():
                 holding_space = True
                 power_building = True
 
+
             elif event.type == pygame.KEYUP and event.key == pygame.K_SPACE and serving:
                 holding_space = False
                 if power_building:
@@ -305,6 +306,14 @@ def start_vs_player_game():
         
         keys = pygame.key.get_pressed()
         handle_player_movement(keys, left_player, right_player)
+
+
+        if holding_space and power_building:
+            power_level += POWER_INCREMENT * power_direction
+            if power_level >= POWER_MAX:
+                power_direction = -1
+            elif power_level <= POWER_MIN:
+                power_direction = 1
 
         if not serving:
             ball.move()
@@ -448,7 +457,7 @@ def start_forehand_learning():
     player = Player(WIDTH // 2 - (PLAYER_WIDTH // 2), 10, PLAYER_WIDTH, PLAYER_HEIGHT)
     
     # Set the initial ball position and velocity
-    initial_ball_y_vel = 15  # Change this value to set a different initial velocity
+    initial_ball_y_vel = 15
     ball = Ball(WIDTH // 2, 10 + PLAYER_HEIGHT, BALL_RADIUS, 'tennis_ball.png')
     ball.y_vel = initial_ball_y_vel  # Set the initial velocity for the ball
 
@@ -526,8 +535,8 @@ def start_backhand_learning():
             pygame.display.update()
             pygame.time.delay(2000)  # Pause for 2 seconds
             score = 0  # Reset score
+            break
 
-    pygame.quit()  # Exit Pygame when donea
 
 def start_serve_learning():
     # Initialize game screen
@@ -612,25 +621,25 @@ def start_serve_learning():
 
 
 # Main menu setup
-mainmenu = pygame_menu.Menu("Ace Academy", 800, 800, theme=pygame_menu.themes.THEME_SOLARIZED)
+mainmenu = pygame_menu.Menu("Ace Academy", 1063, 1001, theme=pygame_menu.themes.THEME_SOLARIZED)
 mainmenu.add.text_input("Name: ", default="", maxchar=20)
 mainmenu.add.button("Select Gamemode", lambda: mainmenu._open(gamemode))
 mainmenu.add.button("Options", lambda: mainmenu._open(options))
 mainmenu.add.button("Quit", pygame_menu.events.EXIT)
 
 # Gamemode menu setup
-gamemode = pygame_menu.Menu("Select Gamemode", 800, 800, theme=pygame_menu.themes.THEME_SOLARIZED)
+gamemode = pygame_menu.Menu("Select Gamemode", 1063, 1001, theme=pygame_menu.themes.THEME_SOLARIZED)
 gamemode.add.button("Learn", lambda: mainmenu._open(learn))
 gamemode.add.button("VS AI", start_vs_ai_gamemode)
 gamemode.add.button("VS Player", start_vs_player_game)  # Start "VS Player" mode
 
 # Options menu setup
-options = pygame_menu.Menu("Options", 800, 800, theme=pygame_menu.themes.THEME_SOLARIZED)
+options = pygame_menu.Menu("Options", 1063, 1001, theme=pygame_menu.themes.THEME_SOLARIZED)
 options.add.selector("Volume:", [("Low", 1), ("Medium", 2), ("High", 3)])
 options.add.selector("Graphics:", [("Low", 1), ("Medium", 2), ("High", 3)])
 
 # Additional menus
-learn = pygame_menu.Menu("Learn Menu", 800, 800, theme=pygame_menu.themes.THEME_GREEN)
+learn = pygame_menu.Menu("Learn Menu", 1063, 1001, theme=pygame_menu.themes.THEME_GREEN)
 learn.add.button("Forhand", start_forehand_learning)
 learn.add.button("Backhand", start_backhand_learning)
 learn.add.button("Serve", start_serve_learning)
